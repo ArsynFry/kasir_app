@@ -29,7 +29,12 @@ class _SignInScreenState extends State<SignInScreen> {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppSizes.padding),
+          padding: EdgeInsets.only(
+            left: AppSizes.padding,
+            right: AppSizes.padding,
+            top: AppSizes.padding,
+            bottom: MediaQuery.of(context).viewInsets.bottom + AppSizes.padding,
+          ),
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -89,7 +94,10 @@ class _SignInScreenState extends State<SignInScreen> {
         if (res.isSuccess) {
           AppRoutes.router.refresh();
         } else {
-          AppDialog.showErrorDialog(error: res.error?.message);
+          final errorMsg = res.error?.message ?? '';
+          if (!errorMsg.toLowerCase().contains('duplicate key')) {
+            AppDialog.showErrorDialog(error: errorMsg);
+          }
         }
       },
     );

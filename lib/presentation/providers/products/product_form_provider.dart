@@ -23,7 +23,7 @@ class ProductFormProvider extends ChangeNotifier {
   String? name;
   int? price;
   int? stock;
-  String? unit = 'pcs';
+  // Removed unit property
   String? description;
 
   bool isLoaded = false;
@@ -34,7 +34,7 @@ class ProductFormProvider extends ChangeNotifier {
     name = null;
     price = null;
     stock = null;
-    unit = 'pcs';
+    // Removed unit reset
     description = null;
     isLoaded = false;
   }
@@ -56,7 +56,7 @@ class ProductFormProvider extends ChangeNotifier {
       price = product?.price;
       stock = product?.stock;
       description = product?.description;
-      unit = product?.unit ?? 'pcs';
+      // Removed unit assignment
 
       isLoaded = true;
       notifyListeners();
@@ -80,7 +80,7 @@ class ProductFormProvider extends ChangeNotifier {
         imageUrl: imageUrl ?? '',
         stock: stock ?? 0,
         price: price ?? 0,
-        unit: unit ?? 'pcs',
+        // Removed unit from ProductEntity
         description: description ?? '',
       );
 
@@ -112,7 +112,7 @@ class ProductFormProvider extends ChangeNotifier {
         imageUrl: imageUrl ?? '',
         stock: stock ?? 0,
         price: price ?? 0,
-        unit: unit ?? 'pcs',
+        // Removed unit from ProductEntity
         description: description ?? '',
       );
 

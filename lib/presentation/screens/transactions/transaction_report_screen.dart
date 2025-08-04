@@ -83,7 +83,7 @@ class _TransactionReportScreenState extends State<TransactionReportScreen> {
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       itemCount: filtered.length,
-      separatorBuilder: (_, __) => const Divider(),
+      separatorBuilder: (_, _) => const Divider(),
       itemBuilder: (context, i) {
         final trx = filtered[i];
         final date = trx.createdAt != null ? trx.createdAt!.split('T').first : '-';
@@ -107,23 +107,12 @@ class _TransactionReportScreenState extends State<TransactionReportScreen> {
                   }
                   if (item.productId == null) {
                     debugPrint('Null productId pada transaksi: id=${trx.id}');
-                    return Text('- ${item.name} (ID produk tidak valid)');
+                    return Text('- ${item.name ?? "(Tanpa nama)"} (ID produk tidak valid)');
                   }
-                  String unit = 'pcs';
-                  final match = allProducts.firstWhere(
-                    (p) => p.id == item.productId,
-                    orElse: () => ProductEntity(
-                      id: item.productId,
-                      createdById: '',
-                      name: item.name,
-                      imageUrl: '',
-                      stock: 0,
-                      price: item.price,
-                      unit: 'pcs',
-                    ),
-                  );
-                  unit = match.unit;
-                  return Text('- ${item.name} (${item.quantity} $unit x ${CurrencyFormatter.format(item.price)})');
+                  final name = item.name ?? '-';
+                  final qty = item.quantity ?? 0;
+                  final price = item.price ?? 0;
+                  return Text('- $name ($qty x ${CurrencyFormatter.format(price)})');
                 }).toList(),
               ],
             ],

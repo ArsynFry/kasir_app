@@ -255,20 +255,6 @@ class TransactionDetailScreen extends StatelessWidget {
   Widget product(BuildContext context, OrderedProductEntity order) {
     final productsProvider = Provider.of<ProductsProvider>(context, listen: false);
     final allProducts = productsProvider.allProducts ?? [];
-    String unit = 'pcs';
-    final match = allProducts.firstWhere(
-      (p) => p.id == order.productId,
-      orElse: () => ProductEntity(
-        id: order.productId,
-        createdById: '',
-        name: order.name,
-        imageUrl: '',
-        stock: 0,
-        price: order.price,
-        unit: 'pcs',
-      ),
-    );
-    unit = match.unit;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -281,7 +267,7 @@ class TransactionDetailScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${CurrencyFormatter.format(order.price)} x ${order.quantity} $unit',
+              '${CurrencyFormatter.format(order.price)} x ${order.quantity}',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Text(

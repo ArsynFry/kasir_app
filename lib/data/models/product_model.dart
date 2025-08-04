@@ -8,7 +8,7 @@ class ProductModel {
   int stock;
   int sold;
   int price;
-  String unit;
+  // Removed unit field
   String? description;
   String? createdAt;
   String? updatedAt;
@@ -21,7 +21,7 @@ class ProductModel {
     required this.stock,
     required this.sold,
     required this.price,
-    this.unit = 'pcs',
+    // Removed unit from constructor
     this.description,
     this.createdAt,
     this.updatedAt,
@@ -36,7 +36,7 @@ class ProductModel {
       stock: json['stock'],
       sold: json['sold'],
       price: json['price'],
-      unit: json['unit'] ?? 'pcs',
+      // Removed unit from fromJson
       description: json['description'],
       createdAt: json['createdAt'],
       updatedAt: json['updatedAt'],
@@ -52,7 +52,7 @@ class ProductModel {
       'stock': stock,
       'sold': sold,
       'price': price,
-      'unit': unit,
+      // Removed unit from toJson
       'description': description,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
@@ -68,7 +68,7 @@ class ProductModel {
       stock: entity.stock,
       sold: entity.sold ?? 0,
       price: entity.price,
-      unit: entity.unit,
+      // Removed unit from fromEntity
       description: entity.description,
       createdAt: entity.createdAt ?? DateTime.now().toIso8601String(),
       updatedAt: entity.updatedAt ?? DateTime.now().toIso8601String(),
@@ -84,7 +84,7 @@ class ProductModel {
       stock: stock,
       sold: sold,
       price: price,
-      unit: unit,
+      // Removed unit from toEntity
       description: description,
       createdAt: createdAt,
       updatedAt: updatedAt,

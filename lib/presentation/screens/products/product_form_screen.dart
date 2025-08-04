@@ -39,7 +39,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final priceController = TextEditingController();
   final stockController = TextEditingController();
   final descController = TextEditingController();
-  final List<String> _units = ['pcs', 'kg', 'liter', 'bungkus', 'batang'];
+  // Removed unit options list
 
   @override
   void initState() {
@@ -112,7 +112,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 description(),
                 createOrUpdateButton(),
                 deleteButton(),
-                _unitDropdown(),
+                // Removed unit dropdown from form
               ],
             ),
           );
@@ -224,21 +224,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     );
   }
 
-  Widget _unitDropdown() {
-    return Padding(
-      padding: const EdgeInsets.only(top: AppSizes.padding),
-      child: DropdownButtonFormField<String>(
-        value: productFormProvider.unit,
-        items: _units.map((u) => DropdownMenuItem(value: u, child: Text(u))).toList(),
-        onChanged: (val) {
-          setState(() {
-            productFormProvider.unit = val;
-          });
-        },
-        decoration: const InputDecoration(labelText: 'Satuan'),
-      ),
-    );
-  }
+  // Removed unit dropdown widget
 
   Widget createOrUpdateButton() {
     return Consumer<ProductFormProvider>(

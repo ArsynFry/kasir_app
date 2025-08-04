@@ -59,9 +59,12 @@ class AppRoutes {
   static final _auth = GoRoute(
     path: '/auth',
     redirect: (context, state) async {
-      // if isAuthenticated = false, go to intended route screen
-      // else back to main screen
+      // if isAuthenticated = false, allow sign_in and sign_up, else back to main screen
       if (!await AuthService().isAuthenticated()) {
+        // Tetap di halaman sign_in atau sign_up jika memang itu tujuannya
+        if (state.fullPath == '/auth/sign_up') {
+          return null;
+        }
         return '/auth/sign_in';
       } else {
         return '/home';

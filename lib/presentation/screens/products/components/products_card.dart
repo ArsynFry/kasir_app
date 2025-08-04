@@ -119,14 +119,14 @@ class ProductsCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Stock ${product.stock} ${product.unit}  |  Sold ${product.sold ?? 0} ${product.unit}',
+                      'Stock ${product.stock}  |  Sold ${product.sold ?? 0}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(fontSize: 8),
                     ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${CurrencyFormatter.format(product.price)}/${product.unit}',
+                  CurrencyFormatter.format(product.price),
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
