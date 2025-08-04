@@ -23,6 +23,7 @@ class ProductFormProvider extends ChangeNotifier {
   String? name;
   int? price;
   int? stock;
+  String? unit = 'pcs';
   String? description;
 
   bool isLoaded = false;
@@ -33,6 +34,7 @@ class ProductFormProvider extends ChangeNotifier {
     name = null;
     price = null;
     stock = null;
+    unit = 'pcs';
     description = null;
     isLoaded = false;
   }
@@ -54,6 +56,7 @@ class ProductFormProvider extends ChangeNotifier {
       price = product?.price;
       stock = product?.stock;
       description = product?.description;
+      unit = product?.unit ?? 'pcs';
 
       isLoaded = true;
       notifyListeners();
@@ -77,6 +80,7 @@ class ProductFormProvider extends ChangeNotifier {
         imageUrl: imageUrl ?? '',
         stock: stock ?? 0,
         price: price ?? 0,
+        unit: unit ?? 'pcs',
         description: description ?? '',
       );
 
@@ -108,6 +112,7 @@ class ProductFormProvider extends ChangeNotifier {
         imageUrl: imageUrl ?? '',
         stock: stock ?? 0,
         price: price ?? 0,
+        unit: unit ?? 'pcs',
         description: description ?? '',
       );
 

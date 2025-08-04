@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../app/themes/app_colors.dart';
 import '../../../app/themes/app_sizes.dart';
@@ -6,8 +7,10 @@ import '../../../app/utilities/currency_formatter.dart';
 import '../../../app/utilities/date_formatter.dart';
 import '../../../core/extensions/string_casing_extension.dart';
 import '../../../domain/entities/ordered_product_entity.dart';
+import '../../../domain/entities/product_entity.dart';
 import '../../../domain/entities/transaction_entity.dart';
 import '../../../service_locator.dart';
+import '../../providers/products/products_provider.dart';
 import '../../providers/transactions/transaction_detail_provider.dart';
 import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_progress_indicator.dart';
@@ -250,6 +253,22 @@ class TransactionDetailScreen extends StatelessWidget {
   }
 
   Widget product(BuildContext context, OrderedProductEntity order) {
+    final productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+    final allProducts = productsProvider.allProducts ?? [];
+    String unit = 'pcs';
+    final match = allProducts.firstWhere(
+      (p) => p.id == order.productId,
+      orElse: () => ProductEntity(
+        id: order.productId,
+        createdById: '',
+        name: order.name,
+        imageUrl: '',
+        stock: 0,
+        price: order.price,
+        unit: 'pcs',
+      ),
+    );
+    unit = match.unit;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -262,7 +281,7 @@ class TransactionDetailScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              '${CurrencyFormatter.format(order.price)} x ${order.quantity}',
+              '${CurrencyFormatter.format(order.price)} x ${order.quantity} $unit',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             Text(

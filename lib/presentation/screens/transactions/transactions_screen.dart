@@ -10,7 +10,9 @@ import '../../widgets/app_progress_indicator.dart';
 import '../../widgets/app_text_field.dart';
 import 'components/transaction_card.dart';
 import '../../providers/products/products_provider.dart';
+
 import '../../../domain/entities/product_entity.dart';
+import 'transaction_report_screen.dart';
 
 // Halaman untuk menampilkan daftar histori transaksi user.
 // Mengambil data dari TransactionsProvider dan menampilkan list transaksi.
@@ -63,6 +65,15 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
             icon: const Icon(Icons.analytics_outlined),
             tooltip: 'SCD',
             onPressed: () => _showScdDialog(context),
+          ),
+          IconButton(
+            icon: const Icon(Icons.insert_chart_outlined),
+            tooltip: 'Laporan',
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => TransactionReportScreen()),
+              );
+            },
           ),
         ],
       ),

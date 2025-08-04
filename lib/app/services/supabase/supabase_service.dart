@@ -21,7 +21,11 @@ class SupabaseService {
   }
 
   Future<String> uploadProductImage(String imgPath) async {
-    final fileName = 'ProductImage_${DateTime.now().millisecondsSinceEpoch}.jpg';
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) throw Exception('User not logged in');
+    // Log userId untuk debug
+    print('[uploadProductImage] userId: $userId');
+    final fileName = '$userId/ProductImages/ProductImage_${DateTime.now().millisecondsSinceEpoch}.jpg';
     final file = File(imgPath);
     final response = await supabase.storage.from('products').upload(fileName, file);
     if (response.isEmpty) {
