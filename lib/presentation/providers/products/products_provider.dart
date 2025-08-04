@@ -7,6 +7,11 @@ import '../../../domain/usecases/params/base_params.dart';
 import '../../../domain/usecases/product_usecases.dart';
 
 class ProductsProvider extends ChangeNotifier {
+  /// Refresh data produk dari Supabase
+  Future<void> refreshProducts() async {
+    await getAllProducts();
+  }
+
   final ProductRepository productRepository;
 
   ProductsProvider({required this.productRepository});

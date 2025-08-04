@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 
-import '../../../app/services/firebase_storage/firebase_storage_service.dart'; // SupabaseStorageService
+import '../../../app/services/supabase/supabase_service.dart'; // SupabaseService
 import '../../../app/services/auth/auth_service.dart';
 import '../../../app/utilities/console_log.dart';
 import '../../../core/errors/errors.dart';
@@ -52,7 +52,7 @@ class AccountProvider extends ChangeNotifier {
   Future<Result<void>> updatedUser(String id) async {
     try {
       if (imageFile != null) {
-        imageUrl = await SupabaseStorageService().uploadUserPhoto(imageFile!.path);
+        imageUrl = await SupabaseService().uploadUserPhoto(imageFile!.path);
       }
 
       cl('[updatedUser].imageUrl $imageUrl');
@@ -67,7 +67,9 @@ class AccountProvider extends ChangeNotifier {
       );
 
       var res = await UpateUserUsecase(userRepository).call(product);
-
+      if (res.isSuccess) {
+        notifyListeners();
+      }
       return res;
     } catch (e) {
       cl("[updatedUser].error $e");

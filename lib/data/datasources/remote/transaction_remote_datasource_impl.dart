@@ -26,11 +26,14 @@ class TransactionRemoteDatasourceImpl extends TransactionDatasource {
       if (transaction.orderedProducts?.isNotEmpty ?? false) {
         for (var orderedProduct in transaction.orderedProducts!) {
           orderedProduct.transactionId = transaction.id;
-          await _supabase.from('OrderedProduct').insert(orderedProduct.toJson());
-          // Update product stock and sold
+          // Cek stok terbaru dari database
           final productData = await _supabase.from('Product').select().eq('id', orderedProduct.productId).maybeSingle();
           if (productData == null) continue;
           var product = ProductModel.fromJson(productData);
+          if (product.stock < orderedProduct.quantity) {
+            throw Exception('Stok produk ${product.name} tidak cukup!');
+          }
+          await _supabase.from('OrderedProduct').insert(orderedProduct.toJson());
           int stock = product.stock - orderedProduct.quantity;
           int sold = product.sold + orderedProduct.quantity;
           await _supabase.from('Product').update({'stock': stock, 'sold': sold}).eq('id', product.id);

@@ -7,9 +7,25 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/auth/auth_base.dart';
 import '../../../core/errors/errors.dart';
 import '../../../core/usecase/usecase.dart';
-//import '../../../firebase_options.dart';
 
 class AuthService implements AuthBase {
+  /// Sign up with email & password
+  Future<Result> signUp({required String email, required String password}) async {
+    try {
+      final response = await Supabase.instance.client.auth.signUp(
+        email: email,
+        password: password,
+      );
+      if (response.user != null) {
+        return Result.success(response);
+      } else {
+        return Result.error(ServiceError(message: 'Sign up failed'));
+      }
+    } catch (e) {
+      return Result.error(ServiceError(message: e.toString()));
+    }
+  }
+
   AuthService();
 
   @override
@@ -25,6 +41,7 @@ class AuthService implements AuthBase {
   }
 
   /// Sign in with email & password
+  @override
   Future<Result> signIn({required String email, required String password}) async {
     try {
       final response = await Supabase.instance.client.auth.signInWithPassword(email: email, password: password);

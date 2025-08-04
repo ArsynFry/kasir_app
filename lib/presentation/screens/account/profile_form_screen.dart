@@ -218,6 +218,9 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
     final userId = AuthService().getAuthData()?.id ?? '';
     var res = await accountProvider.updatedUser(userId);
 
+    // Refresh data user agar imageUrl terbaru langsung tampil
+    await accountProvider.initProfileForm(userId);
+
     AppDialog.closeDialog();
 
     if (res.isSuccess) {

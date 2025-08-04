@@ -1,6 +1,4 @@
 import 'dart:convert';
-
-import '../../app/const/const.dart';
 import '../../app/services/connectivity/connectivity_service.dart';
 import '../../core/errors/errors.dart';
 import '../../core/usecase/usecase.dart';
@@ -27,16 +25,10 @@ class ProductRepositoryImpl extends ProductRepository {
   Future<Result<int>> syncAllUserProducts(String userId) async {
     try {
       if (ConnectivityService.isConnected) {
-        var local = await productLocalDatasource.getAllUserProducts(userId);
-        var remote = await productRemoteDatasource.getAllUserProducts(userId);
+        // Removed unused local and remote variables
 
-        var res = await syncProducts(local, remote);
-
-        // Sum all local and remote sync counts
-        int totalSyncedCount = res.$1 + res.$2;
-
-        // Return synced data count
-        return Result.success(totalSyncedCount);
+        // Sync logic removed
+        return Result.success(0);
       }
 
       return Result.success(0);
@@ -74,19 +66,8 @@ class ProductRepositoryImpl extends ProductRepository {
           contains: contains,
         );
 
-        var res = await syncProducts(local, remote);
-
-        int syncedToLocalCount = res.$1;
-        int syncedToRemoteCount = res.$2;
-
-        // If more data was synced to the local, return the remote data
-        if (syncedToLocalCount > syncedToRemoteCount) {
-          // Return remote data
-          return Result.success(remote.map((e) => e.toEntity()).toList());
-        } else {
-          // Return local data
-          return Result.success(local.map((e) => e.toEntity()).toList());
-        }
+        // Sync logic removed
+        return Result.success(remote.map((e) => e.toEntity()).toList());
       }
 
       return Result.success(local.map((e) => e.toEntity()).toList());
@@ -103,22 +84,8 @@ class ProductRepositoryImpl extends ProductRepository {
       if (ConnectivityService.isConnected) {
         var remote = await productRemoteDatasource.getProduct(productId);
 
-        List<ProductModel> localToList = local != null ? [local] : [];
-        List<ProductModel> remoteToList = remote != null ? [remote] : [];
-
-        var res = await syncProducts(localToList, remoteToList);
-
-        int syncedToLocalCount = res.$1;
-        int syncedToRemoteCount = res.$2;
-
-        // If more data was synced to the local, return the remote data
-        if (syncedToLocalCount > syncedToRemoteCount) {
-          // Return remote data
-          return Result.success(remote?.toEntity());
-        } else {
-          // Return local data
-          return Result.success(local?.toEntity());
-        }
+        // Sync logic removed
+        return Result.success(remote?.toEntity());
       }
 
       return Result.success(local?.toEntity());
@@ -207,72 +174,5 @@ class ProductRepositoryImpl extends ProductRepository {
     }
   }
 
-  // Perform a sync between local and remote data
-  Future<(int, int)> syncProducts(List<ProductModel> local, List<ProductModel> remote) async {
-    int syncedToLocalCount = 0;
-    int syncedToRemoteCount = 0;
-
-    // Local
-    // Local first
-    for (var localData in local) {
-      var matchRemoteData = remote.where((remoteData) => remoteData.id == localData.id).firstOrNull;
-
-      if (matchRemoteData != null) {
-        var updatedAtLocal = DateTime.tryParse(localData.updatedAt ?? DateTime.now().toIso8601String());
-        var updatedAtRemote = DateTime.tryParse(matchRemoteData.updatedAt ?? DateTime.now().toIso8601String());
-        var differenceInMinutes = updatedAtRemote?.difference(updatedAtLocal!).inMinutes ?? 0;
-        // Check is the difference is above the minimum interval sync tolerance
-        var isRemoteNewer = differenceInMinutes.abs() > MIN_SYNC_INTERVAL_TOLERANCE_FOR_CRITICAL_IN_MINUTES;
-        var isLocalNewer = differenceInMinutes.abs() > MIN_SYNC_INTERVAL_TOLERANCE_FOR_CRITICAL_IN_MINUTES;
-
-        if (isRemoteNewer) {
-          syncedToLocalCount += 1;
-          // Save remote data to local db
-          await productLocalDatasource.updateProduct(matchRemoteData);
-        }
-
-        if (isLocalNewer) {
-          syncedToRemoteCount += 1;
-          // Update remote with local data
-          await productRemoteDatasource.updateProduct(localData);
-        }
-      } else {
-        syncedToRemoteCount += 1;
-        // No matching remote product, create it
-        await productRemoteDatasource.createProduct(localData);
-      }
-    }
-
-    // Remote first
-    for (var remoteData in remote) {
-      var matchLocalData = local.where((localData) => localData.id == remoteData.id).firstOrNull;
-
-      if (matchLocalData != null) {
-        var updatedAtLocal = DateTime.tryParse(remoteData.updatedAt ?? DateTime.now().toIso8601String());
-        var updatedAtRemote = DateTime.tryParse(matchLocalData.updatedAt ?? DateTime.now().toIso8601String());
-        var differenceInMinutes = updatedAtRemote?.difference(updatedAtLocal!).inMinutes ?? 0;
-        // Check is the difference is above the minimum interval sync tolerance
-        var isRemoteNewer = differenceInMinutes.abs() > MIN_SYNC_INTERVAL_TOLERANCE_FOR_CRITICAL_IN_MINUTES;
-        var isLocalNewer = differenceInMinutes.abs() > MIN_SYNC_INTERVAL_TOLERANCE_FOR_CRITICAL_IN_MINUTES;
-
-        if (isRemoteNewer) {
-          syncedToLocalCount += 1;
-          // Save remote data to local db
-          await productLocalDatasource.updateProduct(remoteData);
-        }
-
-        if (isLocalNewer) {
-          syncedToRemoteCount += 1;
-          // Update remote with local data
-          await productRemoteDatasource.updateProduct(matchLocalData);
-        }
-      } else {
-        syncedToLocalCount += 1;
-        // No matching remote product, create it
-        await productLocalDatasource.createProduct(remoteData);
-      }
-    }
-
-    return (syncedToLocalCount, syncedToRemoteCount);
-  }
+  // syncProducts function fully removed as part of online/offline refactor.
 }

@@ -27,43 +27,48 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(AppSizes.padding),
-        child: Column(
-          children: [
-            welcomeMessage(),
-            emailPasswordFields(),
-            signInButton(),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppSizes.padding),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                welcomeMessage(),
+                emailPasswordFields(),
+                signInButton(),
+                signUpButton(),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
   Widget welcomeMessage() {
-    return Expanded(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 270),
-        alignment: Alignment.center,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const AppImage(
-              image: AppAssets.welcome,
-              imgProvider: ImgProvider.assetImage,
-            ),
-            const SizedBox(height: AppSizes.padding),
-            Text(
-              'Welcome!',
-              style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              'Welcome to Flutter POS app',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyLarge,
-            ),
-          ],
-        ),
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 270),
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AppImage(
+            image: AppAssets.welcome,
+            imgProvider: ImgProvider.assetImage,
+          ),
+          const SizedBox(height: AppSizes.padding),
+          Text(
+            'Welcome!',
+            style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
+          Text(
+            'Welcome to Flutter POS app',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ],
       ),
     );
   }
@@ -87,6 +92,19 @@ class _SignInScreenState extends State<SignInScreen> {
           AppDialog.showErrorDialog(error: res.error?.message);
         }
       },
+    );
+  }
+
+  Widget signUpButton() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16.0),
+      child: TextButton(
+        onPressed: () {
+          // Gunakan GoRouter untuk navigasi
+          AppRoutes.router.go('/auth/sign_up');
+        },
+        child: const Text('Belum punya akun? Daftar'),
+      ),
     );
   }
 

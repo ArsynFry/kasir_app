@@ -25,34 +25,41 @@ class TransactionLocalDatasourceImpl extends TransactionDatasource {
       );
 
       if (transaction.orderedProducts?.isNotEmpty ?? false) {
-        // Use batch for better performance
-        var batch = trx.batch();
+        // Gunakan Map untuk mencegah double update pada produk yang sama
+        final Map<int, int> productQtyMap = {};
+        for (var orderedProduct in transaction.orderedProducts!) {
+          productQtyMap.update(
+            orderedProduct.productId,
+            (qty) => qty + orderedProduct.quantity,
+            ifAbsent: () => orderedProduct.quantity,
+          );
+        }
 
+        var batch = trx.batch();
         for (var orderedProduct in transaction.orderedProducts!) {
           // Create ordered product
           orderedProduct.transactionId = transaction.id;
-
           batch.insert(
             AppDatabaseConfig.orderedProductTableName,
             orderedProduct.toJson(),
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
+        }
 
-          // Get product
+        // Update stok dan sold hanya sekali per produk
+        for (var entry in productQtyMap.entries) {
+          final productId = entry.key;
+          final totalQty = entry.value;
           var rawProduct = await trx.query(
             AppDatabaseConfig.productTableName,
             where: 'id = ?',
-            whereArgs: [orderedProduct.productId],
+            whereArgs: [productId],
           );
-
           if (rawProduct.isEmpty) continue;
-
           var product = ProductModel.fromJson(rawProduct.first);
-
-          // Update product stock and sold
-          int stock = product.stock - orderedProduct.quantity;
-          int sold = product.sold + orderedProduct.quantity;
-
+          int stock = product.stock - totalQty;
+          if (stock < 0) stock = 0;
+          int sold = product.sold + totalQty;
           batch.update(
             AppDatabaseConfig.productTableName,
             {'stock': stock, 'sold': sold},
@@ -61,8 +68,6 @@ class TransactionLocalDatasourceImpl extends TransactionDatasource {
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
-
-        // Commit batch operations
         await batch.commit(noResult: true);
       }
 
@@ -86,33 +91,40 @@ class TransactionLocalDatasourceImpl extends TransactionDatasource {
       );
 
       if (transaction.orderedProducts?.isNotEmpty ?? false) {
-        // Use batch for better performance
-        var batch = trx.batch();
-
+        // Gunakan Map untuk mencegah double update pada produk yang sama
+        final Map<int, int> productQtyMap = {};
         for (var orderedProduct in transaction.orderedProducts!) {
-          // Update ordered product - Added proper where clause
+          productQtyMap.update(
+            orderedProduct.productId,
+            (qty) => qty + orderedProduct.quantity,
+            ifAbsent: () => orderedProduct.quantity,
+          );
+        }
+
+        var batch = trx.batch();
+        for (var orderedProduct in transaction.orderedProducts!) {
           batch.update(
             AppDatabaseConfig.orderedProductTableName,
             orderedProduct.toJson(),
             where: 'id = ?',
             whereArgs: [orderedProduct.id],
           );
+        }
 
-          // Get product
+        // Update stok dan sold hanya sekali per produk
+        for (var entry in productQtyMap.entries) {
+          final productId = entry.key;
+          final totalQty = entry.value;
           var rawProduct = await trx.query(
             AppDatabaseConfig.productTableName,
             where: 'id = ?',
-            whereArgs: [orderedProduct.productId],
+            whereArgs: [productId],
           );
-
           if (rawProduct.isEmpty) continue;
-
           var product = ProductModel.fromJson(rawProduct.first);
-
-          // Update product stock and sold
-          int stock = product.stock - orderedProduct.quantity;
-          int sold = product.sold + orderedProduct.quantity;
-
+          int stock = product.stock - totalQty;
+          if (stock < 0) stock = 0;
+          int sold = product.sold + totalQty;
           batch.update(
             AppDatabaseConfig.productTableName,
             {'stock': stock, 'sold': sold},
@@ -121,8 +133,6 @@ class TransactionLocalDatasourceImpl extends TransactionDatasource {
             conflictAlgorithm: ConflictAlgorithm.replace,
           );
         }
-
-        // Commit batch operations
         await batch.commit(noResult: true);
       }
     });

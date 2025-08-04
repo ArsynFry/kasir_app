@@ -5,6 +5,7 @@ import '../../presentation/screens/account/about_screen.dart';
 import '../../presentation/screens/account/account_screen.dart';
 import '../../presentation/screens/account/profile_form_screen.dart';
 import '../../presentation/screens/auth/sign_in/sign_in_screen.dart';
+import '../../presentation/screens/auth/sign_up/sign_up_screen.dart';
 import '../../presentation/screens/error_handler_screen.dart';
 import '../../presentation/screens/home/home_screen.dart';
 import '../../presentation/screens/main/main_screen.dart';
@@ -34,7 +35,7 @@ class AppRoutes {
       // if isAuthenticated = false, go to sign-in screen
       // else continue to current intended route screen
       if (!await AuthService().isAuthenticated()) {
-        return '/auth/sign-in';
+        return '/auth/sign_in';
       } else {
         return null;
       }
@@ -61,20 +62,28 @@ class AppRoutes {
       // if isAuthenticated = false, go to intended route screen
       // else back to main screen
       if (!await AuthService().isAuthenticated()) {
-        return '/auth/sign-in';
+        return '/auth/sign_in';
       } else {
         return '/home';
       }
     },
     routes: [
       _signIn,
+      _signUp,
     ],
   );
 
   static final _signIn = GoRoute(
-    path: 'sign-in',
+    path: 'sign_in',
     builder: (context, state) {
       return const SignInScreen();
+    },
+  );
+
+  static final _signUp = GoRoute(
+    path: 'sign_up',
+    builder: (context, state) {
+      return const SignUpScreen();
     },
   );
 

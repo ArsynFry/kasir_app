@@ -13,7 +13,6 @@ import 'package:provider/provider.dart';
 import 'app/database/app_database.dart';
 import 'app/locale/app_locale.dart';
 import 'app/routes/app_routes.dart';
-// import 'firebase_options.dart';
 import 'presentation/providers/theme/theme_provider.dart';
 import 'presentation/screens/error_handler_screen.dart';
 import 'service_locator.dart';

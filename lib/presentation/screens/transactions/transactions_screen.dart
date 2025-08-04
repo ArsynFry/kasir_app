@@ -9,6 +9,8 @@ import '../../widgets/app_loading_more_indicator.dart';
 import '../../widgets/app_progress_indicator.dart';
 import '../../widgets/app_text_field.dart';
 import 'components/transaction_card.dart';
+import '../../providers/products/products_provider.dart';
+import '../../../domain/entities/product_entity.dart';
 
 // Halaman untuk menampilkan daftar histori transaksi user.
 // Mengambil data dari TransactionsProvider dan menampilkan list transaksi.
@@ -56,6 +58,13 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
         title: const Text('Transactions'),
         elevation: 0,
         shadowColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.analytics_outlined),
+            tooltip: 'SCD',
+            onPressed: () => _showScdDialog(context),
+          ),
+        ],
       ),
       body: Consumer<TransactionsProvider>(
         builder: (context, provider, _) {
@@ -119,6 +128,100 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
           );
         },
       ),
+    );
+  }
+
+  void _showScdDialog(BuildContext context) {
+    final productsProvider = Provider.of<ProductsProvider>(context, listen: false);
+    final transactionsProvider = Provider.of<TransactionsProvider>(context, listen: false);
+    final allProducts = productsProvider.allProducts ?? [];
+
+    ProductEntity? selectedProduct;
+    String? scdResult;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: const Text('Cek SCD Produk'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  DropdownButton<ProductEntity>(
+                    isExpanded: true,
+                    value: selectedProduct,
+                    hint: const Text('Pilih produk'),
+                    items: allProducts.map((product) {
+                      return DropdownMenuItem<ProductEntity>(
+                        value: product,
+                        child: Text(product.name),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedProduct = value;
+                        scdResult = null;
+                      });
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  if (selectedProduct != null && scdResult == null) const Text('Tekan tombol di bawah untuk cek SCD.'),
+                  if (scdResult != null) Text(scdResult!, style: const TextStyle(fontWeight: FontWeight.bold)),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Tutup'),
+                ),
+                if (selectedProduct != null && scdResult == null)
+                  ElevatedButton(
+                    onPressed: () {
+                      // Hitung SCD
+                      final now = DateTime.now();
+                      final sevenDaysAgo = now.subtract(const Duration(days: 7));
+                      final allTransactions = transactionsProvider.allTransactions ?? [];
+                      // Filter transaksi 7 hari terakhir
+                      final recentTransactions = allTransactions.where((trx) {
+                        if (trx.createdAt == null) return false;
+                        final trxDate = DateTime.tryParse(trx.createdAt!);
+                        if (trxDate == null) return false;
+                        return trxDate.isAfter(sevenDaysAgo) && trxDate.isBefore(now.add(const Duration(days: 1)));
+                      }).toList();
+                      // Hitung total quantity produk di transaksi 7 hari terakhir
+                      int totalQty = 0;
+                      for (final trx in recentTransactions) {
+                        if (trx.orderedProducts == null) continue;
+                        for (final op in trx.orderedProducts!) {
+                          if (op.productId == selectedProduct!.id) {
+                            totalQty += op.quantity;
+                          }
+                        }
+                      }
+                      // Hitung rata-rata harian
+                      double avgPerDay = totalQty / 7.0;
+                      int stock = selectedProduct!.stock;
+                      String result;
+                      if (avgPerDay == 0) {
+                        result = 'Penjualan 7 hari terakhir 0. SCD tidak dapat dihitung.';
+                      } else {
+                        double scd = stock / avgPerDay;
+                        result =
+                            'Stok: $stock\nRata-rata terjual/hari: ${avgPerDay.toStringAsFixed(2)}\nSCD: ${scd.toStringAsFixed(1)} hari';
+                      }
+                      setState(() {
+                        scdResult = result;
+                      });
+                    },
+                    child: const Text('Cek SCD'),
+                  ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 

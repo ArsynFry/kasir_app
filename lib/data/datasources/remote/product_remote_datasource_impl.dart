@@ -21,7 +21,13 @@ class ProductRemoteDatasourceImpl extends ProductDatasource {
   @override
   Future<void> updateProduct(ProductModel product) async {
     try {
-      await _supabase.from('Product').update(product.toJson()).eq('id', product.id);
+      // Ambil data lama dari database
+      final oldData = await _supabase.from('Product').select().eq('id', product.id).maybeSingle();
+      if (oldData == null) throw Exception('Produk tidak ditemukan');
+      // Gunakan sold lama
+      final updateData = product.toJson();
+      updateData['sold'] = oldData['sold'];
+      await _supabase.from('Product').update(updateData).eq('id', product.id);
     } catch (e) {
       throw Exception(e.toString());
     }
