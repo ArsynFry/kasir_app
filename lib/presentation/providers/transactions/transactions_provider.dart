@@ -21,8 +21,9 @@ class TransactionsProvider extends ChangeNotifier {
       notifyListeners();
     }
 
+    var userId = AuthService().getAuthData()?.id ?? '';
     var params = BaseParams(
-      param: AuthService().getAuthData()!.uid,
+      param: userId,
       offset: offset,
       contains: contains,
     );

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../app/themes/app_sizes.dart';
 import 'app_button.dart';
 
+// Widget untuk menampilkan pesan/tampilan kosong jika data tidak ada.
+// Menampilkan judul, subtitle, dan tombol aksi jika diperlukan.
 class AppEmptyState extends StatelessWidget {
   final String? title;
   final String? subtitle;

@@ -10,6 +10,8 @@ import '../../widgets/app_progress_indicator.dart';
 import '../../widgets/app_text_field.dart';
 import 'components/transaction_card.dart';
 
+// Halaman untuk menampilkan daftar histori transaksi user.
+// Mengambil data dari TransactionsProvider dan menampilkan list transaksi.
 class TransactionsScreen extends StatefulWidget {
   const TransactionsScreen({super.key});
 

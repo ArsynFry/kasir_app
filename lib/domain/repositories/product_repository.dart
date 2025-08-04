@@ -1,6 +1,8 @@
 import '../../core/usecase/usecase.dart';
 import '../entities/product_entity.dart';
 
+// Interface repository untuk produk.
+// Mendefinisikan kontrak CRUD dan sinkronisasi produk.
 abstract class ProductRepository {
   Future<Result<int>> syncAllUserProducts(String userId);
 

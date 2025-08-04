@@ -1,63 +1,38 @@
-import 'dart:io';
+//import 'dart:io';
 
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:flutter_dotenv/flutter_dotenv.dart';
+// import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../core/auth/auth_base.dart';
 import '../../../core/errors/errors.dart';
 import '../../../core/usecase/usecase.dart';
-import '../../../firebase_options.dart';
+//import '../../../firebase_options.dart';
 
 class AuthService implements AuthBase {
-  AuthService({
-    FirebaseAuth? firebaseAuth,
-    GoogleSignIn? googleSignIn,
-  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-       _googleSignIn = googleSignIn ?? GoogleSignIn.instance;
-
-  final FirebaseAuth _firebaseAuth;
-  final GoogleSignIn _googleSignIn;
-
-  final List<String> authScopes = [
-    'https://www.googleapis.com/auth/userinfo.profile',
-    'https://www.googleapis.com/auth/userinfo.email',
-  ];
+  AuthService();
 
   @override
   Future<bool> isAuthenticated() async {
-    return _firebaseAuth.currentUser != null;
+    final user = Supabase.instance.client.auth.currentUser;
+    return user != null;
   }
 
+  /// Return SupabaseUser? (or null if not logged in)
   @override
   User? getAuthData() {
-    return _firebaseAuth.currentUser;
+    return Supabase.instance.client.auth.currentUser;
   }
 
-  @override
-  Future<Result<UserCredential>> signIn() async {
-    await _googleSignIn.initialize(
-      clientId: Platform.isIOS ? DefaultFirebaseOptions.ios.iosClientId : null,
-      serverClientId: dotenv.env['GOOGLE_SERVER_CLIENT_ID'],
-    );
-
+  /// Sign in with email & password
+  Future<Result> signIn({required String email, required String password}) async {
     try {
-      final googleSignInAccount = await _googleSignIn.authenticate();
-
-      final googleSignInAuthentication = googleSignInAccount.authentication;
-
-      final googleSignInAuthorization = await googleSignInAccount.authorizationClient.authorizationForScopes(
-        authScopes,
-      );
-
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthorization?.accessToken,
-        idToken: googleSignInAuthentication.idToken,
-      );
-
-      final userCredential = await _firebaseAuth.signInWithCredential(credential);
-
-      return Result.success(userCredential);
+      final response = await Supabase.instance.client.auth.signInWithPassword(email: email, password: password);
+      if (response.user != null) {
+        return Result.success(response);
+      } else {
+        return Result.error(ServiceError(message: 'Sign in failed'));
+      }
     } catch (e) {
       return Result.error(ServiceError(message: e.toString()));
     }
@@ -66,8 +41,7 @@ class AuthService implements AuthBase {
   @override
   Future<bool> signOut() async {
     try {
-      await _firebaseAuth.signOut();
-      await _googleSignIn.signOut();
+      await Supabase.instance.client.auth.signOut();
       return true;
     } catch (e) {
       return false;

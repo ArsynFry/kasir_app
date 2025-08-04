@@ -1,3 +1,44 @@
+// Widget input text custom untuk aplikasi.
+// Mendukung berbagai style dan validasi.
+// Contoh penggunaan:
+// AppTextField(
+//   controller: textController,
+//   enabled: true,
+//   autofocus: false,
+//   obscureText: false,
+//   fontSize: 16,
+//   minLines: 1,
+//   maxLines: 5,
+//   maxLength: 100,
+//   keyboardType: TextInputType.text,
+//   textInputAction: TextInputAction.done,
+//   hintText: 'Masukkan teks di sini',
+//   labelText: 'Label Teks',
+//   prefixWidget: Icon(Icons.text_fields),
+//   suffixWidget: IconButton(
+//     icon: Icon(Icons.clear),
+//     onPressed: () {
+//       textController.clear();
+//     },
+//   ),
+//   contentPadding: EdgeInsets.all(16),
+//   onChanged: (text) {
+//     print('Teks berubah: $text');
+//   },
+//   onEditingComplete: () {
+//     print('Editing selesai');
+//   },
+//   onTapClearButton: () {
+//     print('Tombol bersih diketuk');
+//   },
+//   inputFormatters: [
+//     FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9 ]+$')),
+//   ],
+//   showCounter: true,
+//   showBorder: true,
+//   type: AppTextFieldType.general,
+// )
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 

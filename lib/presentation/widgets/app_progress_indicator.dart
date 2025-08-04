@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../app/themes/app_sizes.dart';
 
-// App Progress Indicator
+// Widget indikator loading custom untuk aplikasi.
+// Digunakan untuk menampilkan loading spinner.
+/// App Progress Indicator
 class AppProgressIndicator extends StatelessWidget {
   final double fontSize;
   final bool showMessage;

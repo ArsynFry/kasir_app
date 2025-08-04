@@ -35,8 +35,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await accountProvider.initProfileForm(AuthService().getAuthData()!.uid);
-
+      final userId = AuthService().getAuthData()?.id ?? '';
+      await accountProvider.initProfileForm(userId);
       nameController.text = accountProvider.name ?? '';
       emailController.text = accountProvider.email ?? '';
       phoneController.text = accountProvider.phone ?? '';
@@ -215,7 +215,8 @@ class _ProfileFormScreenState extends State<ProfileFormScreen> {
 
     AppDialog.showDialogProgress();
 
-    var res = await accountProvider.updatedUser(AuthService().getAuthData()!.uid);
+    final userId = AuthService().getAuthData()?.id ?? '';
+    var res = await accountProvider.updatedUser(userId);
 
     AppDialog.closeDialog();
 

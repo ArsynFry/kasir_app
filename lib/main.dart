@@ -1,5 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
+// Entry point aplikasi Flutter POS.
+// Inisialisasi Supabase, theme, dan routing aplikasi.
+// Jangan lupa setup Supabase sebelum runApp.
+
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +13,7 @@ import 'package:provider/provider.dart';
 import 'app/database/app_database.dart';
 import 'app/locale/app_locale.dart';
 import 'app/routes/app_routes.dart';
-import 'firebase_options.dart';
+// import 'firebase_options.dart';
 import 'presentation/providers/theme/theme_provider.dart';
 import 'presentation/screens/error_handler_screen.dart';
 import 'service_locator.dart';
@@ -19,20 +22,17 @@ void main() async {
   // Initialize binding
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase (use `flutterfire configure` to generate the options)
-  await Firebase.initializeApp(
-    name: DefaultFirebaseOptions.currentPlatform.projectId,
-    options: DefaultFirebaseOptions.currentPlatform,
+  // Initialize flutter_dotenv
+  await dotenv.load();
+
+  // Initialize Supabase
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL'] ?? '',
+    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
   );
 
   // Initialize app local db
   await AppDatabase().init();
-
-  // Ensure persistence is cleared
-  await FirebaseFirestore.instance.clearPersistence();
-
-  // Initialize flutter_dotenv
-  await dotenv.load();
 
   // Initialize date formatting
   initializeDateFormatting();

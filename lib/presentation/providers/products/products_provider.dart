@@ -21,8 +21,9 @@ class ProductsProvider extends ChangeNotifier {
       notifyListeners();
     }
 
+    var user = AuthService().getAuthData();
     var params = BaseParams(
-      param: AuthService().getAuthData()!.uid,
+      param: user?.id ?? '',
       offset: offset,
       contains: contains,
     );

@@ -1,34 +1,49 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/user_model.dart';
 import '../interfaces/user_datasource.dart';
 
 class UserRemoteDatasourceImpl extends UserDatasource {
-  final FirebaseFirestore _firebaseFirestore;
+  final SupabaseClient _supabase;
 
-  UserRemoteDatasourceImpl(this._firebaseFirestore);
+  UserRemoteDatasourceImpl(this._supabase);
 
   @override
   Future<String> createUser(UserModel user) async {
-    await _firebaseFirestore.collection('User').doc(user.id).set(user.toJson());
-    // The id is uid from GoogleSignIn credential
-    return user.id;
+    try {
+      await _supabase.from('User').insert(user.toJson());
+      return user.id;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   @override
   Future<void> updateUser(UserModel user) async {
-    await _firebaseFirestore.collection('User').doc(user.id).set(user.toJson(), SetOptions(merge: true));
+    try {
+      await _supabase.from('User').update(user.toJson()).eq('id', user.id);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   @override
   Future<void> deleteUser(String id) async {
-    await _firebaseFirestore.collection('User').doc(id).delete();
+    try {
+      await _supabase.from('User').delete().eq('id', id);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   @override
   Future<UserModel?> getUser(String id) async {
-    var res = await _firebaseFirestore.collection('User').where('id', isEqualTo: id).get();
-    if (res.docs.isEmpty) return null;
-    return UserModel.fromJson(res.docs.first.data());
+    try {
+      final data = await _supabase.from('User').select().eq('id', id).maybeSingle();
+      if (data == null) return null;
+      return UserModel.fromJson(data);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 }

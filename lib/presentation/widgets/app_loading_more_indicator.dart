@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/themes/app_sizes.dart';
 import 'app_progress_indicator.dart';
 
+// Widget indikator loading tambahan (misal: saat load more data di list).
 class AppLoadingMoreIndicator extends StatelessWidget {
   final bool isLoading;
   final EdgeInsets? padding;

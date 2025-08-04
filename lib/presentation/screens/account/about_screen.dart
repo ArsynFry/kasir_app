@@ -81,7 +81,7 @@ class _AboutScreenState extends State<AboutScreen> {
               ),
               const SizedBox(height: AppSizes.padding * 2),
               Text(
-                "This application is designed to be used both online and offline. The application's local data (sqflite) will be automatically synchronized with the cloud data (firestore) when the application detects an internet connection.\n\nThis application uses an offline-first approach, where data will be stored in the local database first and then in the cloud database if there is an internet connection. If there is no internet connection, all actions performed by the user (create, update, delete) will be recorded as 'QueuedActions' in local database and will be executed automatically when the internet connection available.",
+                "This application is designed to be used both online and offline. The application's local data (sqflite) will be automatically synchronized with the cloud data (Supabase) when the application detects an internet connection.\n\nThis application uses an offline-first approach, where data will be stored in the local database first and then in the cloud database if there is an internet connection. If there is no internet connection, all actions performed by the user (create, update, delete) will be recorded as 'QueuedActions' in local database and will be executed automatically when the internet connection available.",
                 textAlign: TextAlign.justify,
                 style: Theme.of(context).textTheme.bodySmall,
               ),

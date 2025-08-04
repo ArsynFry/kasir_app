@@ -1,4 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+// Dependency injection utama aplikasi.
+// Mendaftarkan provider, repository, dan service yang digunakan di seluruh aplikasi.
+// Gunakan sl<T>() untuk mengambil instance yang sudah didaftarkan.
+
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
@@ -31,7 +35,7 @@ final GetIt sl = GetIt.instance;
 // Service Locator
 void setupServiceLocator() async {
   sl.registerSingleton<AppDatabase>(AppDatabase());
-  sl.registerSingleton<FirebaseFirestore>(FirebaseFirestore.instance);
+  sl.registerSingleton<SupabaseClient>(Supabase.instance.client);
 
   // Datasources
   // Local Datasources
@@ -40,9 +44,9 @@ void setupServiceLocator() async {
   sl.registerLazySingleton(() => UserLocalDatasourceImpl(sl<AppDatabase>()));
   sl.registerLazySingleton(() => QueuedActionLocalDatasourceImpl(sl<AppDatabase>()));
   // Remote Datasources
-  sl.registerLazySingleton(() => ProductRemoteDatasourceImpl(sl<FirebaseFirestore>()));
-  sl.registerLazySingleton(() => TransactionRemoteDatasourceImpl(sl<FirebaseFirestore>()));
-  sl.registerLazySingleton(() => UserRemoteDatasourceImpl(sl<FirebaseFirestore>()));
+  sl.registerLazySingleton(() => ProductRemoteDatasourceImpl(sl<SupabaseClient>()));
+  sl.registerLazySingleton(() => TransactionRemoteDatasourceImpl(sl<SupabaseClient>()));
+  sl.registerLazySingleton(() => UserRemoteDatasourceImpl(sl<SupabaseClient>()));
 
   // Repositories
   sl.registerLazySingleton(

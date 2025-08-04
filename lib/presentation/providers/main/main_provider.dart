@@ -109,10 +109,11 @@ class MainProvider extends ChangeNotifier {
     // Run multiple futures simultaneusly
     // Because each repository has beed added data checker method
     // The local db will automatically sync with cloud db or vice versa
+    var userId = auth.id;
     var res = await Future.wait([
-      GetUserUsecase(userRepository).call(auth.uid),
-      SyncAllUserProductsUsecase(productRepository).call(auth.uid),
-      SyncAllUserTransactionsUsecase(transactionRepository).call(auth.uid),
+      GetUserUsecase(userRepository).call(userId),
+      SyncAllUserProductsUsecase(productRepository).call(userId),
+      SyncAllUserTransactionsUsecase(transactionRepository).call(userId),
     ]);
 
     // Set and notify user state

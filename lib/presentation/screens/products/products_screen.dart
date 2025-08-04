@@ -13,6 +13,7 @@ import '../../widgets/app_progress_indicator.dart';
 import '../../widgets/app_text_field.dart';
 import 'components/products_card.dart';
 
+// Halaman daftar produk, menampilkan semua produk milik user.
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});
 

@@ -1,3 +1,6 @@
+// Halaman login/sign in aplikasi.
+// Mendukung login email/password dan bisa dikembangkan untuk Google Sign-In.
+
 import 'package:app_image/app_image.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +21,8 @@ class SignInScreen extends StatefulWidget {
 
 class _SignInScreenState extends State<SignInScreen> {
   final _authProvider = sl<AuthProvider>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +32,7 @@ class _SignInScreenState extends State<SignInScreen> {
         child: Column(
           children: [
             welcomeMessage(),
+            emailPasswordFields(),
             signInButton(),
           ],
         ),
@@ -64,20 +70,44 @@ class _SignInScreenState extends State<SignInScreen> {
 
   Widget signInButton() {
     return AppButton(
-      text: 'Sign In With Google',
+      text: 'Sign In',
       onTap: () async {
+        final email = _emailController.text.trim();
+        final password = _passwordController.text.trim();
+        if (email.isEmpty || password.isEmpty) {
+          AppDialog.showErrorDialog(error: 'Email dan password wajib diisi');
+          return;
+        }
         AppDialog.showDialogProgress();
-
-        var res = await _authProvider.signIn();
-
+        var res = await _authProvider.signIn(email: email, password: password);
         AppDialog.closeDialog();
-
         if (res.isSuccess) {
           AppRoutes.router.refresh();
         } else {
           AppDialog.showErrorDialog(error: res.error?.message);
         }
       },
+    );
+  }
+
+  Widget emailPasswordFields() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16.0),
+      child: Column(
+        children: [
+          TextField(
+            controller: _emailController,
+            decoration: const InputDecoration(labelText: 'Email'),
+            keyboardType: TextInputType.emailAddress,
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _passwordController,
+            decoration: const InputDecoration(labelText: 'Password'),
+            obscureText: true,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -39,13 +39,14 @@ class HomeProvider extends ChangeNotifier {
 
   Future<Result<int>> createTransaction() async {
     try {
+      var userId = AuthService().getAuthData()?.id ?? '';
       var transaction = TransactionEntity(
         id: DateTime.now().millisecondsSinceEpoch,
         paymentMethod: selectedPaymentMethod,
         customerName: customerName,
         description: description,
         orderedProducts: orderedProducts,
-        createdById: AuthService().getAuthData()!.uid,
+        createdById: userId,
         receivedAmount: receivedAmount,
         returnAmount: receivedAmount - getTotalAmount(),
         totalOrderedProduct: orderedProducts.length,

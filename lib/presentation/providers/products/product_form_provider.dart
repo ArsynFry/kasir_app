@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 
 import '../../../app/services/auth/auth_service.dart';
-import '../../../app/services/firebase_storage/firebase_storage_service.dart';
+import '../../../app/services/firebase_storage/firebase_storage_service.dart'; // SupabaseStorageService
 import '../../../app/utilities/console_log.dart';
 import '../../../core/errors/errors.dart';
 import '../../../core/usecase/usecase.dart';
@@ -65,13 +65,14 @@ class ProductFormProvider extends ChangeNotifier {
   Future<Result<int>> createProduct() async {
     try {
       if (imageFile != null) {
-        imageUrl = await FirebaseStorageService().uploadProductImage(imageFile!.path);
+        imageUrl = await SupabaseStorageService().uploadProductImage(imageFile!.path);
       }
 
       cl('[createProduct].imageUrl $imageUrl');
 
+      var user = AuthService().getAuthData();
       var product = ProductEntity(
-        createdById: AuthService().getAuthData()!.uid,
+        createdById: user?.id ?? '',
         name: name ?? '',
         imageUrl: imageUrl ?? '',
         stock: stock ?? 0,
@@ -94,14 +95,15 @@ class ProductFormProvider extends ChangeNotifier {
   Future<Result<void>> updatedProduct(int id) async {
     try {
       if (imageFile != null) {
-        imageUrl = await FirebaseStorageService().uploadProductImage(imageFile!.path);
+        imageUrl = await SupabaseStorageService().uploadProductImage(imageFile!.path);
       }
 
       cl('[updatedProduct].imageUrl $imageUrl');
 
+      var user = AuthService().getAuthData();
       var product = ProductEntity(
         id: id,
-        createdById: AuthService().getAuthData()!.uid,
+        createdById: user?.id ?? '',
         name: name!,
         imageUrl: imageUrl ?? '',
         stock: stock ?? 0,
@@ -161,13 +163,13 @@ class ProductFormProvider extends ChangeNotifier {
   }
 
   bool isFormValid() {
+    var user = AuthService().getAuthData();
     List validator = [
-      AuthService().getAuthData()?.uid != null,
+      user?.id != null,
       name?.isNotEmpty,
       (price ?? 0) > 0,
       (stock ?? 0) > 0,
     ];
-
     return !validator.contains(false);
   }
 }

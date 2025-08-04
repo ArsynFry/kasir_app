@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../../app/themes/app_sizes.dart';
 
+// Widget tombol custom yang digunakan di seluruh aplikasi.
+// Mendukung berbagai style, warna, dan child custom.
 class AppButton extends StatelessWidget {
+  // Widget tombol reusable dengan berbagai opsi style dan callback onTap.
   final double? width;
   final double? height;
   final double? fontSize;

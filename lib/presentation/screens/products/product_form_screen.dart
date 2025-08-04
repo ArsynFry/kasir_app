@@ -18,6 +18,8 @@ import '../../widgets/app_icon_button.dart';
 import '../../widgets/app_progress_indicator.dart';
 import '../../widgets/app_text_field.dart';
 
+// Halaman form tambah/edit produk.
+// Meng-handle input, validasi, dan submit produk baru/ubah produk.
 class ProductFormScreen extends StatefulWidget {
   final int? id;
 

@@ -1,41 +1,60 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../models/product_model.dart';
 import '../interfaces/product_datasource.dart';
 
 class ProductRemoteDatasourceImpl extends ProductDatasource {
-  final FirebaseFirestore _firebaseFirestore;
+  final SupabaseClient _supabase;
 
-  ProductRemoteDatasourceImpl(this._firebaseFirestore);
+  ProductRemoteDatasourceImpl(this._supabase);
 
   @override
   Future<int> createProduct(ProductModel product) async {
-    await _firebaseFirestore.collection('Product').doc("${product.id}").set(product.toJson());
-    // The id has been generated in models
-    return product.id;
+    try {
+      await _supabase.from('Product').insert(product.toJson());
+      return product.id;
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   @override
   Future<void> updateProduct(ProductModel product) async {
-    await _firebaseFirestore.collection('Product').doc("${product.id}").set(product.toJson(), SetOptions(merge: true));
+    try {
+      await _supabase.from('Product').update(product.toJson()).eq('id', product.id);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   @override
   Future<void> deleteProduct(int id) async {
-    await _firebaseFirestore.collection('Product').doc("$id").delete();
+    try {
+      await _supabase.from('Product').delete().eq('id', id);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   @override
   Future<ProductModel?> getProduct(int id) async {
-    var res = await _firebaseFirestore.collection('Product').doc("$id").get();
-    if (res.data() == null) return null;
-    return ProductModel.fromJson(res.data()!);
+    try {
+      final data = await _supabase.from('Product').select().eq('id', id).maybeSingle();
+      if (data == null) return null;
+      return ProductModel.fromJson(data);
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   @override
   Future<List<ProductModel>> getAllUserProducts(String userId) async {
-    var res = await _firebaseFirestore.collection('Product').where('createdById', isEqualTo: userId).get();
-    return res.docs.map((e) => ProductModel.fromJson(e.data())).toList();
+    try {
+      final data = await _supabase.from('Product').select().eq('createdById', userId);
+      return (data as List).map((e) => ProductModel.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception(e.toString());
+    }
   }
 
   @override
@@ -47,38 +66,24 @@ class ProductRemoteDatasourceImpl extends ProductDatasource {
     int? offset,
     String? contains,
   }) async {
-    // Because firestore doesn't suppport numeric offset
-    // Instead, use query cursors. Get last document snapshot then pass it to startAfterDocument
-    // https://firebase.google.com/docs/firestore/query-data/query-cursors
-
-    var query = _firebaseFirestore
-        .collection('Product')
-        .where('createdById', isEqualTo: userId)
-        .where('name', arrayContains: contains)
-        .orderBy(orderBy, descending: sortBy == 'DESC')
-        .limit(limit);
-
-    if (offset != null) {
-      DocumentSnapshot<Object?>? lastSnapshot;
-
-      var temp = await _firebaseFirestore
-          .collection('Product')
-          .where('createdById', isEqualTo: userId)
-          .orderBy(orderBy, descending: sortBy == 'DESC')
-          .limit(offset)
-          .get();
-
-      lastSnapshot = temp.docs.lastOrNull;
-
-      if (lastSnapshot != null) {
-        query = query.startAfterDocument(lastSnapshot);
-      } else {
-        return [];
+    try {
+      var query = _supabase.from('Product').select().eq('createdById', userId);
+      if (contains != null && contains.isNotEmpty) {
+        query = query.ilike('name', '%$contains%');
       }
+      // chaining order, limit, range
+      if (offset != null) {
+        final data = await query
+            .order(orderBy, ascending: sortBy != 'DESC')
+            .limit(limit)
+            .range(offset, offset + limit - 1);
+        return (data as List).map((e) => ProductModel.fromJson(e as Map<String, dynamic>)).toList();
+      } else {
+        final data = await query.order(orderBy, ascending: sortBy != 'DESC').limit(limit);
+        return (data as List).map((e) => ProductModel.fromJson(e as Map<String, dynamic>)).toList();
+      }
+    } catch (e) {
+      throw Exception(e.toString());
     }
-
-    var rawProducts = await query.get();
-
-    return rawProducts.docs.map((e) => ProductModel.fromJson(e.data())).toList();
   }
 }

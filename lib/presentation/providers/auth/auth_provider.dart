@@ -12,9 +12,9 @@ class AuthProvider extends ChangeNotifier {
 
   AuthProvider({required this.userRepository});
 
-  Future<Result<String>> signIn() async {
+  Future<Result<String>> signIn({required String email, required String password}) async {
     try {
-      var res = await AuthService().signIn();
+      var res = await AuthService().signIn(email: email, password: password);
 
       if (res.isHasError) {
         return Result.error(res.error);
@@ -30,13 +30,15 @@ class AuthProvider extends ChangeNotifier {
 
   Future<Result<String>> saveUser() async {
     var authData = AuthService().getAuthData();
-
+    if (authData == null) {
+      return Result.error(ServiceError(message: 'User not logged in'));
+    }
     var user = UserEntity(
-      id: authData!.uid,
+      id: authData.id,
       email: authData.email,
-      name: authData.displayName ?? '',
-      imageUrl: authData.photoURL,
-      phone: authData.phoneNumber ?? '',
+      name: authData.userMetadata?['name'] as String? ?? '',
+      imageUrl: authData.userMetadata?['photo_url'] as String?,
+      phone: authData.phone,
       birthdate: null,
     );
 

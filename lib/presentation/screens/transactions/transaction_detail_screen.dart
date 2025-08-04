@@ -13,6 +13,7 @@ import '../../widgets/app_empty_state.dart';
 import '../../widgets/app_progress_indicator.dart';
 import '../error_handler_screen.dart';
 
+// Halaman detail transaksi, menampilkan detail produk yang dibeli dan info transaksi.
 class TransactionDetailScreen extends StatelessWidget {
   final int id;
 

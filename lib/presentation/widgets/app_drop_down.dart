@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/themes/app_sizes.dart';
 
+// Widget dropdown custom untuk aplikasi.
 class AppDropDown<T> extends StatelessWidget {
   final T? selectedValue;
   final List<DropdownMenuItem<T>> dropdownItems;

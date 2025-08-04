@@ -1,3 +1,7 @@
+// Kumpulan static method untuk menampilkan dialog custom di aplikasi.
+// Mendukung dialog konfirmasi, error, loading, dsb.
+// Dialog ini digunakan secara global di seluruh aplikasi, dengan pengaturan tema dan ukuran yang konsisten.
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
